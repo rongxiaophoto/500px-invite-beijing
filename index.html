@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#3a0904" />
+  <link rel="preload" as="image" href="./invite-template.png" />
+  <title>500px 视觉盛典北京站邀请函</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: #f7d07a;
+      background:
+        radial-gradient(circle at 50% 22%, rgba(255, 207, 81, .38), rgba(255, 207, 81, 0) 20%),
+        radial-gradient(circle at 85% 8%, rgba(255, 222, 150, .26), rgba(255, 222, 150, 0) 18%),
+        radial-gradient(circle at 15% 18%, rgba(255, 191, 90, .16), rgba(255, 191, 90, 0) 20%),
+        linear-gradient(145deg, #5f2200 0%, #8a3207 18%, #b6490a 40%, #8d1807 68%, #280403 100%);
+      background-attachment: fixed;
+      overflow-x: hidden;
+    }
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+    body::before {
+      background:
+        linear-gradient(112deg, transparent 12%, rgba(255, 231, 174, .13) 20%, transparent 28%),
+        linear-gradient(106deg, transparent 32%, rgba(255, 208, 97, .10) 40%, transparent 48%),
+        linear-gradient(100deg, transparent 58%, rgba(255, 240, 197, .12) 64%, transparent 70%);
+    }
+    body::after {
+      background: linear-gradient(180deg, rgba(255,255,255,.04), transparent 22%, rgba(0,0,0,.12));
+    }
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(73, 13, 4, .76), rgba(44, 7, 3, .88));
+      border: 1px solid rgba(255, 211, 120, .22);
+      border-radius: 22px;
+      padding: 18px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 22px 50px rgba(0,0,0,.28);
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 26px;
+      line-height: 1.3;
+      color: #ffe29f;
+      text-align: left;
+      letter-spacing: .5px;
+    }
+    .event-meta {
+      margin: 0 0 10px;
+      color: #f2bd57;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .3px;
+    }
+    .desc {
+      margin: 0 0 20px;
+      color: rgba(255, 236, 202, .92);
+      font-size: 14px;
+      line-height: 1.75;
+      text-align: left;
+    }
+    .form-item { margin-bottom: 14px; }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #ffe5b0;
+      font-size: 14px;
+    }
+    input[type="text"], input[type="tel"], input[type="file"] {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid rgba(247, 208, 122, .3);
+      border-radius: 12px;
+      outline: none;
+      background: rgba(255,255,255,.10);
+      color: #fff4d8;
+      font-size: 16px;
+    }
+    input::placeholder { color: rgba(255,255,255,.45); }
+    .btn {
+      width: 100%;
+      margin-top: 6px;
+      padding: 15px 16px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #ffe09a, #f2ba4f);
+      color: #5b2000;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn:disabled { opacity: .58; cursor: not-allowed; }
+    .status {
+      min-height: 24px;
+      margin: 14px 0 0;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #ffd27d;
+    }
+    .status.error { color: #ff9b8e; }
+    .status.success { color: #ffe3a6; }
+    .signup-prompt {
+      display: none;
+      margin-top: 10px;
+      padding: 14px;
+      border: 1px solid rgba(247, 208, 122, .22);
+      border-radius: 12px;
+      background: rgba(255, 211, 120, .08);
+      color: rgba(255, 232, 190, .88);
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .signup-prompt.show { display: block; }
+    .signup-prompt a {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #ffe09a, #f2ba4f);
+      color: #5b2000;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* 生成结果：真正固定在 body 上，全屏展示 */
+    .result {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background: linear-gradient(180deg, #2d0804 0%, #4b1107 55%, #260604 100%);
+    }
+    .result.show { display: block; }
+    .result-panel {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      padding: max(12px, env(safe-area-inset-top)) 12px max(10px, env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .result-title {
+      flex: 0 0 auto;
+      margin: 0 50px 8px;
+      color: #ffe29f;
+      font-size: 16px;
+      line-height: 1.4;
+      font-weight: 700;
+      text-align: center;
+    }
+    .result-close {
+      position: fixed;
+      top: max(10px, env(safe-area-inset-top));
+      right: 10px;
+      z-index: 10001;
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255,225,168,.28);
+      border-radius: 50%;
+      background: rgba(26,4,2,.62);
+      color: #ffe3a6;
+      font-size: 26px;
+      line-height: 36px;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .preview-wrap {
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .preview-wrap img {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      -webkit-touch-callout: default;
+      user-select: auto;
+    }
+    .save-tip {
+      flex: 0 0 auto;
+      margin: 8px 0 6px;
+      color: rgba(255,232,190,.82);
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .actions {
+      flex: 0 0 auto;
+      display: flex;
+      gap: 8px;
+      margin-top: 5px;
+      flex-wrap: nowrap;
+    }
+    .ghost-btn, .download-link {
+      flex: 1;
+      min-width: 0;
+      padding: 11px 10px;
+      border-radius: 12px;
+      text-align: center;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .ghost-btn {
+      border: 1px solid rgba(247,208,122,.35);
+      background: transparent;
+      color: #ffd27d;
+      cursor: pointer;
+    }
+    .download-link {
+      border: 1px solid rgba(247,208,122,.24);
+      background: rgba(255,211,120,.12);
+      color: #ffd27d;
+    }
+    body.modal-open { overflow: hidden; }
+
+    @media (max-width: 640px) {
+      .page { padding: 16px 12px 32px; }
+      .card { padding: 16px; border-radius: 18px; }
+      h1 { font-size: 23px; }
+      .result-panel { padding: max(6px, env(safe-area-inset-top)) 6px max(6px, env(safe-area-inset-bottom)); }
+      .result-title { display: none; }
+      .save-tip { margin: 6px 0 4px; font-size: 12px; }
+      .ghost-btn, .download-link { padding: 10px 8px; font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="card">
+      <h1>领取你的500px专属邀请函</h1>
+      <div class="event-meta">2026视觉中国500px视觉盛典·北京站｜09/06 · 中华世纪坛剧场</div>
+      <p class="desc">欢迎参加视觉盛典北京站。已报名用户输入 <strong>500px 用户名</strong>、<strong>手机号后 4 位</strong>并上传头像，即可生成专属邀请函。</p>
+
+      <div class="form-item">
+        <label for="username">500px 用户名</label>
+        <input id="username" type="text" autocomplete="off" placeholder="请输入500px用户名" />
+      </div>
+      <div class="form-item">
+        <label for="phoneLast4">手机号后 4 位</label>
+        <input id="phoneLast4" type="tel" maxlength="5" inputmode="numeric" autocomplete="off" placeholder="例如 1234" />
+      </div>
+      <div class="form-item">
+        <label for="avatarFile">上传个人头像</label>
+        <input id="avatarFile" type="file" accept="image/*" />
+      </div>
+
+      <button id="generateBtn" class="btn">生成邀请函</button>
+      <div id="status" class="status"></div>
+
+      <div id="signupPrompt" class="signup-prompt">
+        暂未匹配到报名信息，请检查用户名和手机号后 4 位是否填写正确。<br>
+        如已提交报名问卷，请于24小时后再尝试。<br>
+        如尚未报名，可点击下方查看活动详情并报名。<br>
+        <a href="https://mp.weixin.qq.com/s/hFhNOr4633dhehBHwqkVNg" target="_blank" rel="noopener noreferrer">查看活动详情并报名</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="result" class="result" aria-hidden="true">
+    <div class="result-panel">
+      <button id="resultCloseBtn" class="result-close" type="button" aria-label="关闭">×</button>
+      <div class="result-title">你的专属邀请函已生成</div>
+      <div class="preview-wrap">
+        <img id="resultImage" alt="" />
+      </div>
+      <p class="save-tip">手机端长按图片保存，电脑端可直接下载。</p>
+      <div class="actions">
+        <button id="regenerateBtn" class="ghost-btn" type="button">返回修改</button>
+        <a id="downloadLink" class="download-link" href="#" download>下载邀请函</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TEMPLATE_SRC = './invite-template.png';
+    const STAFF_CODE = '58888';
+
+    // 设计基准与原图一致：1152 × 2048。
+    const BASE_WIDTH = 1152;
+    const BASE_HEIGHT = 2048;
+    const FULL_WIDTH = 5175;
+    const FULL_HEIGHT = 9200;
+
+    const AVATAR_BASE = { x: 576, y: 582, r: 111 };
+    const USERNAME_BASE = { x: 576, y: 805, maxWidth: 556, fontSize: 55, minFontSize: 27 };
+
+    const usernameInput = document.getElementById('username');
+    const phoneLast4Input = document.getElementById('phoneLast4');
+    const avatarInput = document.getElementById('avatarFile');
+    const generateBtn = document.getElementById('generateBtn');
+    const regenerateBtn = document.getElementById('regenerateBtn');
+    const resultCloseBtn = document.getElementById('resultCloseBtn');
+    const statusEl = document.getElementById('status');
+    const signupPrompt = document.getElementById('signupPrompt');
+    const resultWrap = document.getElementById('result');
+    const resultImage = document.getElementById('resultImage');
+    const downloadLink = document.getElementById('downloadLink');
+
+    let currentResultUrl = '';
+    let signupDataLoadPromise = null;
+    let templateImagePromise = null;
+
+    phoneLast4Input.addEventListener('input', () => {
+      phoneLast4Input.value = phoneLast4Input.value.replace(/\D/g, '').slice(0, 5);
+    });
+
+    function setStatus(message, type = '') {
+      statusEl.textContent = message;
+      statusEl.className = 'status' + (type ? ' ' + type : '');
+    }
+
+    function openResultModal() {
+      resultWrap.classList.add('show');
+      resultWrap.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+    }
+
+    function closeResultModal() {
+      resultWrap.classList.remove('show');
+      resultWrap.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+    }
+
+    // data.js 每次打开页面都加时间戳，尽量避免微信/GitHub Pages 缓存旧报名数据。
+    function loadSignupData() {
+      if (Array.isArray(window.SIGNUP_DATA)) return Promise.resolve(window.SIGNUP_DATA);
+      if (signupDataLoadPromise) return signupDataLoadPromise;
+
+      signupDataLoadPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = './data.js?v=' + Date.now();
+        script.async = true;
+        script.onload = () => {
+          if (Array.isArray(window.SIGNUP_DATA)) resolve(window.SIGNUP_DATA);
+          else reject(new Error('报名数据格式异常'));
+        };
+        script.onerror = () => reject(new Error('报名数据加载失败'));
+        document.head.appendChild(script);
+      });
+      return signupDataLoadPromise;
+    }
+
+    function normalizeName(value) {
+      return (value || '').toString().trim().toLowerCase().replace(/[\s\u3000]+/g, '');
+    }
+
+    // 保留用户名“半匹配”：完全一致优先，其次前缀/包含关系。
+    function scoreMatch(inputName, recordName) {
+      const input = normalizeName(inputName);
+      const record = normalizeName(recordName);
+      if (!input || !record) return -1;
+      if (input === record) return 100;
+      if (record.startsWith(input) || input.startsWith(record)) return 80;
+      if (record.includes(input) || input.includes(record)) return 60;
+      return -1;
+    }
+
+    function findMatchedUser(name, last4) {
+      const list = Array.isArray(window.SIGNUP_DATA) ? window.SIGNUP_DATA : [];
+      const candidates = list
+        .filter(item => String(item.phoneLast4) === last4)
+        .map(item => ({ ...item, score: scoreMatch(name, item.username) }))
+        .filter(item => item.score >= 0)
+        .sort((a, b) => b.score - a.score || a.username.length - b.username.length);
+      return candidates[0] || null;
+    }
+
+    function loadImage(src, friendlyName = '图片') {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.decoding = 'async';
+        img.onload = () => {
+          if (!img.naturalWidth || !img.naturalHeight) {
+            reject(new Error(friendlyName + '加载失败，请刷新页面后重试。'));
+            return;
+          }
+          resolve(img);
+        };
+        img.onerror = () => reject(new Error(friendlyName + '加载失败，请刷新页面后重试。'));
+        img.src = src;
+      });
+    }
+
+    function getTemplateImage() {
+      if (!templateImagePromise) {
+        templateImagePromise = loadImage(TEMPLATE_SRC, '邀请函模板').catch(err => {
+          templateImagePromise = null;
+          throw new Error('邀请函模板加载失败，请确认 invite-template.png 已上传并与 index.html 位于同一目录。');
+        });
+      }
+      return templateImagePromise;
+    }
+
+    async function loadAvatar(file) {
+      const objectUrl = URL.createObjectURL(file);
+      try {
+        return await loadImage(objectUrl, '头像');
+      } finally {
+        // 图片解码完成后即可释放临时文件 URL
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
+      }
+    }
+
+    function drawAvatar(ctx, img, width, height) {
+      const sxScale = width / BASE_WIDTH;
+      const syScale = height / BASE_HEIGHT;
+      const x = AVATAR_BASE.x * sxScale;
+      const y = AVATAR_BASE.y * syScale;
+      const r = AVATAR_BASE.r * sxScale;
+      const padding = r * .04;
+      const drawDiameter = (r - padding) * 2;
+
+      const sw = img.naturalWidth || img.width;
+      const sh = img.naturalHeight || img.height;
+      const size = Math.min(sw, sh);
+      const sx = (sw - size) / 2;
+      const sy = (sh - size) / 2;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x, y, r - padding, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(img, sx, sy, size, size, x - drawDiameter / 2, y - drawDiameter / 2, drawDiameter, drawDiameter);
+      ctx.restore();
+    }
+
+    function drawUsername(ctx, name, width, height) {
+      const sxScale = width / BASE_WIDTH;
+      const syScale = height / BASE_HEIGHT;
+      const x = USERNAME_BASE.x * sxScale;
+      const y = USERNAME_BASE.y * syScale;
+      const maxWidth = USERNAME_BASE.maxWidth * sxScale;
+      const minFontSize = USERNAME_BASE.minFontSize * sxScale;
+      let fontSize = USERNAME_BASE.fontSize * sxScale;
+
+      ctx.save();
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = 'rgb(244, 194, 95)';
+      ctx.strokeStyle = 'rgb(244, 194, 95)';
+      ctx.lineWidth = Math.max(1, 1.2 * sxScale);
+      ctx.shadowColor = 'rgba(0,0,0,0)';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+
+      while (fontSize >= minFontSize) {
+        ctx.font = `700 ${fontSize}px "PingFang SC", "Microsoft YaHei", Arial, sans-serif`;
+        if (ctx.measureText(name).width <= maxWidth) break;
+        fontSize -= 2 * sxScale;
+      }
+
+      // 描边 + 填充可避免部分手机 WebView 把金色文字渲染发黑。
+      ctx.strokeText(name, x, y);
+      ctx.fillText(name, x, y);
+      ctx.restore();
+    }
+
+    function canvasToBlob(canvas) {
+      return new Promise((resolve, reject) => {
+        if (!canvas.toBlob) {
+          try {
+            const dataUrl = canvas.toDataURL('image/png');
+            fetch(dataUrl).then(r => r.blob()).then(resolve).catch(reject);
+          } catch (e) { reject(e); }
+          return;
+        }
+        canvas.toBlob(blob => {
+          if (blob && blob.size > 1000) resolve(blob);
+          else reject(new Error('图片导出失败'));
+        }, 'image/png');
+      });
+    }
+
+    function verifyBlobImage(blob) {
+      return new Promise((resolve, reject) => {
+        const testUrl = URL.createObjectURL(blob);
+        const img = new Image();
+        img.onload = () => { URL.revokeObjectURL(testUrl); resolve(); };
+        img.onerror = () => { URL.revokeObjectURL(testUrl); reject(new Error('生成图片校验失败')); };
+        img.src = testUrl;
+      });
+    }
+
+    async function renderPoster(templateImg, avatarImg, name, scale = 1) {
+      const width = Math.round(FULL_WIDTH * scale);
+      const height = Math.round(FULL_HEIGHT * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d', { alpha: true });
+      if (!ctx) throw new Error('当前浏览器暂不支持图片生成，请更换浏览器后重试。');
+
+      ctx.clearRect(0, 0, width, height);
+      drawAvatar(ctx, avatarImg, width, height);       // 最下层：头像
+      ctx.drawImage(templateImg, 0, 0, width, height); // 中间层：模板
+      drawUsername(ctx, name, width, height);          // 最上层：用户名
+
+      try {
+        const blob = await canvasToBlob(canvas);
+        await verifyBlobImage(blob);
+        return blob;
+      } finally {
+        // 主动释放超大 Canvas 内存，减少 iPhone / 微信内置浏览器崩溃概率。
+        canvas.width = 1;
+        canvas.height = 1;
+      }
+    }
+
+    async function createPosterBlob(templateImg, avatarImg, name) {
+      try {
+        // 优先生成设计要求的 5175 × 9200 原尺寸。
+        return await renderPoster(templateImg, avatarImg, name, 1);
+      } catch (fullError) {
+        console.warn('Full-size poster failed, fallback to half-size:', fullError);
+        // 部分 iPhone / 微信 WebView 对超大 Canvas 有像素上限，自动退到 1/2 尺寸保证能正常保存。
+        return await renderPoster(templateImg, avatarImg, name, .5);
+      }
+    }
+
+    async function showPosterBlob(blob, username) {
+      if (currentResultUrl) {
+        URL.revokeObjectURL(currentResultUrl);
+        currentResultUrl = '';
+      }
+      const url = URL.createObjectURL(blob);
+
+      // 先确认预览图确实加载成功，再打开全屏结果页，避免出现“问号/破图”。
+      await new Promise((resolve, reject) => {
+        resultImage.onload = () => resolve();
+        resultImage.onerror = () => reject(new Error('邀请函预览加载失败，请重新生成。'));
+        resultImage.src = url;
+      });
+
+      currentResultUrl = url;
+      downloadLink.href = url;
+      downloadLink.download = `500px北京站邀请函_${username}.png`;
+      openResultModal();
+    }
+
+    async function generatePoster() {
+      const inputName = usernameInput.value.trim();
+      const phoneLast4 = phoneLast4Input.value.trim();
+      const avatarFile = avatarInput.files && avatarInput.files[0];
+      const isStaffMode = phoneLast4 === STAFF_CODE;
+
+      signupPrompt.classList.remove('show');
+      closeResultModal();
+
+      if (!inputName) return setStatus('请输入 500px 用户名。', 'error');
+      if (!isStaffMode && !/^\d{4}$/.test(phoneLast4)) return setStatus('请输入正确的手机号后 4 位。', 'error');
+      if (!avatarFile) return setStatus('请先上传个人头像。', 'error');
+
+      try {
+        generateBtn.disabled = true;
+        setStatus('正在生成邀请函，请稍候…', 'success');
+
+        if (!isStaffMode) {
+          try {
+            await loadSignupData();
+          } catch (e) {
+            setStatus('报名数据加载失败，请刷新页面后重试。', 'error');
+            return;
+          }
+        }
+
+        const matched = isStaffMode ? { username: inputName } : findMatchedUser(inputName, phoneLast4);
+        if (!matched) {
+          setStatus('暂未匹配到报名信息。', 'error');
+          signupPrompt.classList.add('show');
+          return;
+        }
+
+        const [templateImg, avatarImg] = await Promise.all([
+          getTemplateImage(),
+          loadAvatar(avatarFile)
+        ]);
+
+        const blob = await createPosterBlob(templateImg, avatarImg, matched.username);
+        await showPosterBlob(blob, matched.username);
+        setStatus(`邀请函已生成：${matched.username}`, 'success');
+      } catch (error) {
+        console.error(error);
+        setStatus(error && error.message ? error.message : '生成失败，请刷新页面后重试。', 'error');
+        closeResultModal();
+      } finally {
+        generateBtn.disabled = false;
+      }
+    }
+
+    generateBtn.addEventListener('click', generatePoster);
+    regenerateBtn.addEventListener('click', closeResultModal);
+    resultCloseBtn.addEventListener('click', closeResultModal);
+    window.addEventListener('beforeunload', () => {
+      if (currentResultUrl) URL.revokeObjectURL(currentResultUrl);
+    });
+
+    // 页面打开时预加载最新报名数据与英文名模板，降低首次生成等待时间。
+    loadSignupData().catch(() => {});
+    getTemplateImage().catch(() => {});
+  </script>
+</body>
+</html>
